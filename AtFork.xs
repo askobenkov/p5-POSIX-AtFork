@@ -127,9 +127,13 @@ paf_child(void) {
 
     /* fix up pid */
     pidsv = get_sv("$", GV_ADD);
-    SvREADONLY_off(pidsv);
-    sv_setiv(pidsv, (IV)PerlProc_getpid());
-    SvREADONLY_on(pidsv);
+    if (SvREADONLY(pidsv)) {
+        SvREADONLY_off(pidsv);
+        sv_setiv(pidsv, (IV)PerlProc_getpid());
+        SvREADONLY_on(pidsv);
+    } else {
+        sv_setiv(pidsv, (IV)PerlProc_getpid());
+    }
 
     paf_call_list(aTHX_ MY_CXT.child_list);
 }
